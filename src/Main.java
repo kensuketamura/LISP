@@ -5,10 +5,10 @@ public class Main {
 	public static void main(String[] args) throws IOException {
 		InputKey a = new InputKey();
 		LexicalAnalysis b = new LexicalAnalysis();
-		b.lexana(a.input());
 		SyntacticAnalysis c = new SyntacticAnalysis();
-		c.synana(b.getToken());
 		Evaluation d = new Evaluation();
+		b.lexana(a.input());
+		c.synana(b.getToken());
 		d.eval(c.getStart());
 		System.out.println("-----END-----");
 	}
