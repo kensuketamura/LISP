@@ -8,7 +8,7 @@ public class Evaluation {
 		if(value.equals("+") || value.equals("-") || value.equals("*") || value.equals("/")){
 			System.out.println(calc(start));
 		} else if(value.equals("<") || value.equals(">") || value.equals("<=") || value.equals(">=") || value.equals("=")){
-			comp(start);
+			System.out.println(comp(start));
 		}
 	}
 	Stack<Cons> node2 = new Stack<Cons>();
@@ -38,7 +38,7 @@ public class Evaluation {
 			while(token.cdr != null){
 				ans *= calc(token.cdr);
 				token = token.cdr;
-				
+
 			}
 			if(node2.isEmpty() == false){
 				token = node2.pop();
