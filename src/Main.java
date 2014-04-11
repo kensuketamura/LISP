@@ -7,9 +7,11 @@ public class Main {
 		LexicalAnalysis b = new LexicalAnalysis();
 		SyntacticAnalysis c = new SyntacticAnalysis();
 		Evaluation d = new Evaluation();
-		b.lexana(a.input());
-		c.synana(b.getToken());
-		d.eval(c.getStart());
+		while(!a.input().equals("END")){
+			b.lexana(a.getInput());
+			c.synana(b.getToken());
+			d.eval(c.getStart());
+		}
 		System.out.println("-----END-----");
 	}
 

@@ -9,6 +9,7 @@ public class LexicalAnalysis {
 	public void lexana(String in){
 		int i, j;
 		j = 0;
+		token.clear();
 		for(i = 0; i < in.length(); i++){
 			if(in.charAt(i) != ' '){
 				if(in.charAt(i) == '(' || in.charAt(i) == ')'){
