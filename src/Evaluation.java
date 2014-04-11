@@ -1,27 +1,37 @@
 import java.util.ArrayList;
 import java.util.Stack;
 
-
+//評価クラス
 public class Evaluation {
 	public ArrayList<Variable> varlist = new ArrayList<Variable>();
 	public ArrayList<Function> funclist = new ArrayList<Function>();
-	public void eval(Cons start){
+	private Function nowfunc;
+
+	//実行分岐(評価)メソッド
+	public int eval(Cons start){
 		String value;
+		int i, result = 0;
 		value = start.getValue();
 		if(value.equals("+") || value.equals("-") || value.equals("*") || value.equals("/")){
-			System.out.println(calc(start));
+			result = calc(start);
 		} else if(value.equals("<") || value.equals(">") || value.equals("<=") || value.equals(">=") || value.equals("=")){
 			comp(start);
 		} else if(value.equals("if")){
-			funcIf(start);
+			result = funcIf(start);
 		} else if(value.equals("setq")){
-			funcSetq(start);
+			result = funcSetq(start);
 			System.out.println(varlist.get(varlist.size() - 1).name + " = " + varlist.get(varlist.size() - 1).value);
 		} else if(value.equals("defun")){
-			funcDefun(start);
-		} else {
-			searchFunc(value);
+			result = funcDefun(start);
+		} else if(searchFunc(value, true) != null){
+			nowfunc = searchFunc(value, true);
+			for(i = 0; i < nowfunc.parameter.size(); i++){
+				nowfunc.parameter.get(i).value = Integer.parseInt(start.cdr.car.getValue());
+			}
+			result = eval(nowfunc.start);
 		}
+		System.out.println(result);
+		return result;
 	}
 	Stack<Cons> node = new Stack<Cons>();	//car部分に新しい枝が発生したときの発生源(ノード)を保存するスタック
 
@@ -90,7 +100,12 @@ public class Evaluation {
 			if(Character.isDigit(token.getValue().charAt(0))){
 				ans = Integer.parseInt(token.getValue());
 			} else {
-
+				if(searchVar(token.getValue(), false) != null){
+					ans = searchVar(token.getValue(), true).value;
+				}
+				if(searchFunc(token.getValue(), false) != null){
+					ans = eval(searchFunc(token.getValue(), true).start);
+				}
 			}
 		}
 		return ans;
@@ -189,26 +204,35 @@ public class Evaluation {
 	}
 
 	//変数検索メソッド
-	public Variable searchVar(String name){
+	public Variable searchVar(String name, boolean errorprint){
 		int i = 0;
 		for(i = 0; i < this.varlist.size(); i++){
-			if(name == this.varlist.get(i).name){
+			if(name.equals(this.varlist.get(i).name)){
 				return this.varlist.get(i);
 			}
 		}
-		System.out.println(name + " is not found");
+		for(i = 0; i < this.nowfunc.parameter.size(); i++){
+			if(name.equals(this.nowfunc.parameter.get(i).name)){
+				return this.nowfunc.parameter.get(i);
+			}
+		}
+		if(errorprint){
+			System.out.println(name + " is not found");
+		}
 		return null;	//Not Found
 	}
 
 	//関数検索メソッド
-	public Function searchFunc(String name){
+	public Function searchFunc(String name, boolean errorprint){
 		int i = 0;
 		for(i = 0; i < this.funclist.size(); i++){
-			if(name == this.funclist.get(i).name){
+			if(name.equals(this.funclist.get(i).name)){
 				return this.funclist.get(i);
 			}
 		}
-		System.out.println(name + " is not found");
+		if(errorprint){
+			System.out.println(name + " is not found");
+		}
 		return null;	//Not Found
 	}
 }
