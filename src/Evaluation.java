@@ -5,7 +5,7 @@ import java.util.Stack;
 public class Evaluation {
 	public ArrayList<Variable> varlist = new ArrayList<Variable>();
 	public ArrayList<Function> funclist = new ArrayList<Function>();
-	private Function nowfunc;
+	private Function prefunc, nowfunc;
 	private Stack<Function> currentFunc = new Stack<Function>();
 	private boolean skip = false;
 
@@ -27,12 +27,16 @@ public class Evaluation {
 		} else if(value.equals("defun")){
 			result = funcDefun(start);
 		} else if(searchFunc(value, false) != null){
-			nowfunc = searchFunc(value, false);
+			if(nowfunc == null){
+				nowfunc = (Function)searchFunc(value, false).clone();
+			}
+			prefunc = (Function)searchFunc(value, false).clone();
 			temp = start.cdr.car;
-			for(i = 0; i < nowfunc.parameter.size(); i++){
-				nowfunc.parameter.get(i).value = eval(temp);
+			for(i = 0; i < prefunc.parameter.size(); i++){
+				prefunc.parameter.get(i).value = eval(temp);
 				temp = temp.cdr;
 			}
+			nowfunc = prefunc;
 			currentFunc.push(nowfunc);
 			result = eval(nowfunc.start.cdr.cdr.car);
 			if(!currentFunc.isEmpty()){
@@ -40,10 +44,10 @@ public class Evaluation {
 				if(!currentFunc.isEmpty()){
 					nowfunc = currentFunc.pop();
 				}
-			} else {
-				nowfunc = null;
 			}
-			skip = true;
+			if(start.cdr.cdr != null){
+				skip = true;
+			}
 		} else if(searchVar(value, false) != null){
 			result = searchVar(value, false).value;
 		} else if(Character.isDigit(value.charAt(0))){
@@ -65,6 +69,7 @@ public class Evaluation {
 				ans += calc(token.cdr);
 				if(skip){
 					token = token.cdr.cdr;
+					skip = false;
 				} else {
 					token = token.cdr;
 				}
@@ -84,6 +89,7 @@ public class Evaluation {
 				}
 				if(skip){
 					token = token.cdr.cdr;
+					skip = false;
 				} else {
 					token = token.cdr;
 				}
@@ -98,6 +104,7 @@ public class Evaluation {
 				ans *= calc(token.cdr);
 				if(skip){
 					token = token.cdr.cdr;
+					skip = false;
 				} else {
 					token = token.cdr;
 				}
@@ -117,6 +124,7 @@ public class Evaluation {
 				}
 				if(skip){
 					token = token.cdr.cdr;
+					skip = false;
 				} else {
 					token = token.cdr;
 				}
@@ -212,12 +220,14 @@ public class Evaluation {
 				if(comp(token.car)){
 					if(skip){
 						token = token.cdr.cdr;
+						skip = false;
 					} else {
 						token = token.cdr;
 					}
 				} else {
 					if(skip){
 						token = token.cdr.cdr.cdr;
+						skip = false;
 					} else {
 						token = token.cdr.cdr;
 					}
