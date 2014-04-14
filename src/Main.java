@@ -3,6 +3,7 @@ import java.io.IOException;
 public class Main {
 
 	public static void main(String[] args) throws IOException {
+		System.out.printf("\n");
 		System.out.println("00     0000   0000    000000");
 		System.out.println("00      00   00   00  00   00");
 		System.out.println("00      00    00      00   00");

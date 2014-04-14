@@ -6,6 +6,8 @@ public class Evaluation {
 	public ArrayList<Variable> varlist = new ArrayList<Variable>();
 	public ArrayList<Function> funclist = new ArrayList<Function>();
 	private Function nowfunc;
+	private Stack<Function> currentFunc = new Stack<Function>();
+	private boolean skip = false;
 
 	//実行分岐(評価)メソッド
 	public int eval(Cons start){
@@ -28,7 +30,17 @@ public class Evaluation {
 			for(i = 0; i < nowfunc.parameter.size(); i++){
 				nowfunc.parameter.get(i).value = Integer.parseInt(start.cdr.car.getValue());
 			}
-			result = eval(nowfunc.start);
+			currentFunc.push(nowfunc);
+			result = eval(nowfunc.start.cdr.cdr.car);
+			if(!currentFunc.isEmpty()){
+				currentFunc.pop();
+				if(!currentFunc.isEmpty()){
+					nowfunc = currentFunc.pop();
+				}
+			} else {
+				nowfunc = null;
+			}
+			skip = true;
 		}
 		System.out.println(result);
 		return result;
@@ -44,7 +56,11 @@ public class Evaluation {
 		case "+":
 			while(token.cdr != null){
 				ans += calc(token.cdr);
-				token = token.cdr;
+				if(skip){
+					token = token.cdr.cdr;
+				} else {
+					token = token.cdr;
+				}
 			}
 			if(node.isEmpty() == false){
 				token = node.pop();
@@ -59,7 +75,11 @@ public class Evaluation {
 				} else {
 					ans -= calc(token.cdr);
 				}
-				token = token.cdr;
+				if(skip){
+					token = token.cdr.cdr;
+				} else {
+					token = token.cdr;
+				}
 			}
 			if(node.isEmpty() == false){
 				token = node.pop();
@@ -69,8 +89,11 @@ public class Evaluation {
 			ans = 1;
 			while(token.cdr != null){
 				ans *= calc(token.cdr);
-				token = token.cdr;
-
+				if(skip){
+					token = token.cdr.cdr;
+				} else {
+					token = token.cdr;
+				}
 			}
 			if(node.isEmpty() == false){
 				token = node.pop();
@@ -85,7 +108,11 @@ public class Evaluation {
 				} else {
 					ans /= calc(token.cdr);
 				}
-				token = token.cdr;
+				if(skip){
+					token = token.cdr.cdr;
+				} else {
+					token = token.cdr;
+				}
 			}
 			if(node.isEmpty() == false){
 				token = node.pop();
@@ -104,7 +131,7 @@ public class Evaluation {
 					ans = searchVar(token.getValue(), true).value;
 				}
 				if(searchFunc(token.getValue(), false) != null){
-					ans = eval(searchFunc(token.getValue(), true).start);
+					ans = eval(token);
 				}
 			}
 		}
@@ -165,9 +192,17 @@ public class Evaluation {
 			token = token.cdr;	//token = "if"→"("
 			if(token.cdr.getValue().equals("(")){
 				if(comp(token)){
-					token = token.cdr;
+					if(skip){
+						token = token.cdr.cdr;
+					} else {
+						token = token.cdr;
+					}
 				} else {
-					token = token.cdr.cdr;
+					if(skip){
+						token = token.cdr.cdr.cdr;
+					} else {
+						token = token.cdr.cdr;
+					}
 				}
 				eval(token.car);
 				return 0;
@@ -191,7 +226,7 @@ public class Evaluation {
 	//関数定義メソッド
 	public int funcDefun(Cons token){
 		if(!token.cdr.getValue().equals("(") || !token.cdr.getValue().equals(")")){
-			Function a=  new Function(token.cdr.getValue(), token.cdr.cdr.cdr.car);
+			Function a=  new Function(token.cdr.getValue(), token.cdr);
 			token = token.cdr.cdr.car;
 			while(token != null){
 				a.parameter.add(new Variable(token.getValue(), 0));
@@ -206,14 +241,14 @@ public class Evaluation {
 	//変数検索メソッド
 	public Variable searchVar(String name, boolean errorprint){
 		int i = 0;
-		for(i = 0; i < this.varlist.size(); i++){
-			if(name.equals(this.varlist.get(i).name)){
-				return this.varlist.get(i);
-			}
-		}
 		for(i = 0; i < this.nowfunc.parameter.size(); i++){
 			if(name.equals(this.nowfunc.parameter.get(i).name)){
 				return this.nowfunc.parameter.get(i);
+			}
+		}
+		for(i = 0; i < this.varlist.size(); i++){
+			if(name.equals(this.varlist.get(i).name)){
+				return this.varlist.get(i);
 			}
 		}
 		if(errorprint){
