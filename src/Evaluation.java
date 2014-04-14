@@ -11,6 +11,7 @@ public class Evaluation {
 
 	//実行分岐(評価)メソッド
 	public int eval(Cons start){
+		Cons temp;
 		String value;
 		int i, result = 0;
 		value = start.getValue();
@@ -25,10 +26,12 @@ public class Evaluation {
 			System.out.println(varlist.get(varlist.size() - 1).name + " = " + varlist.get(varlist.size() - 1).value);
 		} else if(value.equals("defun")){
 			result = funcDefun(start);
-		} else if(searchFunc(value, true) != null){
-			nowfunc = searchFunc(value, true);
+		} else if(searchFunc(value, false) != null){
+			nowfunc = searchFunc(value, false);
+			temp = start.cdr.car;
 			for(i = 0; i < nowfunc.parameter.size(); i++){
-				nowfunc.parameter.get(i).value = Integer.parseInt(start.cdr.car.getValue());
+				nowfunc.parameter.get(i).value = eval(temp);
+				temp = temp.cdr;
 			}
 			currentFunc.push(nowfunc);
 			result = eval(nowfunc.start.cdr.cdr.car);
@@ -41,6 +44,10 @@ public class Evaluation {
 				nowfunc = null;
 			}
 			skip = true;
+		} else if(searchVar(value, false) != null){
+			result = searchVar(value, false).value;
+		} else if(Character.isDigit(value.charAt(0))){
+			result = Integer.parseInt(value);
 		}
 		System.out.println(result);
 		return result;
@@ -141,37 +148,48 @@ public class Evaluation {
 	//比較演算メソッド
 	public boolean comp(Cons token){
 		boolean ans = false;
+		int element1, element2;
+		if(token.cdr.car == null){
+			element1 = eval(token.cdr);
+		} else {
+			element1 = eval(token.cdr.car);
+		}
+		if(token.cdr.cdr.car == null){
+			element2 = eval(token.cdr.cdr);
+		} else {
+			element2 = eval(token.cdr.cdr.car);
+		}
 		switch(token.getValue()){
 		case "<":
-			if(Integer.parseInt(token.cdr.getValue()) < Integer.parseInt(token.cdr.cdr.getValue())){
+			if(element1 < element2){
 				ans = true;
 			} else {
 				ans = false;
 			}
 			break;
 		case ">":
-			if(Integer.parseInt(token.cdr.getValue()) > Integer.parseInt(token.cdr.cdr.getValue())){
+			if(element1 > element2){
 				ans = true;
 			} else {
 				ans = false;
 			}
 			break;
 		case "<=":
-			if(Integer.parseInt(token.cdr.getValue()) <= Integer.parseInt(token.cdr.cdr.getValue())){
+			if(element1 <= element2){
 				ans = true;
 			} else {
 				ans = false;
 			}
 			break;
 		case ">=":
-			if(Integer.parseInt(token.cdr.getValue()) >= Integer.parseInt(token.cdr.cdr.getValue())){
+			if(element1 >= element2){
 				ans = true;
 			} else {
 				ans = false;
 			}
 			break;
 		case "=":
-			if(Integer.parseInt(token.cdr.getValue()) == Integer.parseInt(token.cdr.cdr.getValue())){
+			if(element1 == element2){
 				ans = true;
 			} else {
 				ans = false;
@@ -191,7 +209,7 @@ public class Evaluation {
 		if(token.cdr.getValue().equals("(")){
 			token = token.cdr;	//token = "if"→"("
 			if(token.cdr.getValue().equals("(")){
-				if(comp(token)){
+				if(comp(token.car)){
 					if(skip){
 						token = token.cdr.cdr;
 					} else {
