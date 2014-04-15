@@ -17,6 +17,7 @@ public class Evaluation {
 		value = start.getValue();
 		if(value.equals("+") || value.equals("-") || value.equals("*") || value.equals("/")){
 			result = calc(start);
+			System.out.println(result);
 		} else if(value.equals("<") || value.equals(">") || value.equals("<=") || value.equals(">=") || value.equals("=")){
 			comp(start);
 		} else if(value.equals("if")){
@@ -53,7 +54,7 @@ public class Evaluation {
 		} else if(Character.isDigit(value.charAt(0))){
 			result = Integer.parseInt(value);
 		}
-		System.out.println(result);
+		//System.out.println(result);
 		return result;
 	}
 	Stack<Cons> node = new Stack<Cons>();	//car部分に新しい枝が発生したときの発生源(ノード)を保存するスタック
@@ -74,7 +75,7 @@ public class Evaluation {
 					token = token.cdr;
 				}
 			}
-			if(node.isEmpty() == false){
+			if(!node.isEmpty()){
 				token = node.pop();
 			}
 			break;
@@ -94,7 +95,7 @@ public class Evaluation {
 					token = token.cdr;
 				}
 			}
-			if(node.isEmpty() == false){
+			if(!node.isEmpty()){
 				token = node.pop();
 			}
 			break;
@@ -109,7 +110,7 @@ public class Evaluation {
 					token = token.cdr;
 				}
 			}
-			if(node.isEmpty() == false){
+			if(!node.isEmpty()){
 				token = node.pop();
 			}
 			break;
@@ -129,7 +130,7 @@ public class Evaluation {
 					token = token.cdr;
 				}
 			}
-			if(node.isEmpty() == false){
+			if(!node.isEmpty()){
 				token = node.pop();
 			}
 			break;
@@ -205,15 +206,16 @@ public class Evaluation {
 			break;
 		}
 		if(ans){
-			System.out.println("T");
+			//System.out.println("T");
 		} else {
-			System.out.println("Nil");
+			//System.out.println("Nil");
 		}
 		return ans;
 	}
 
 	//if文メソッド
 	public int funcIf(Cons token){
+		int ans;
 		if(token.cdr.getValue().equals("(")){
 			token = token.cdr;	//token = "if"→"("
 			if(token.cdr.getValue().equals("(")){
@@ -232,8 +234,9 @@ public class Evaluation {
 						token = token.cdr.cdr;
 					}
 				}
-				eval(token.car);
-				return 0;
+				ans = eval(token.car);
+				System.out.println("If = " + ans);
+				return ans;
 			}
 		}
 		return -1;	//error
