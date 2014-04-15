@@ -8,6 +8,7 @@ public class Evaluation {
 	private Function prefunc, nowfunc;
 	private Stack<Function> currentFunc = new Stack<Function>();
 	private boolean skip = false;
+	private ArrayList<Integer> outprint = new ArrayList<Integer>();
 
 	//実行分岐(評価)メソッド
 	public int eval(Cons start){
@@ -43,7 +44,7 @@ public class Evaluation {
 			if(!currentFunc.isEmpty()){
 				currentFunc.pop();
 				if(!currentFunc.isEmpty()){
-					nowfunc = currentFunc.pop();
+					nowfunc = currentFunc.peek();
 				}
 			}
 			if(start.cdr.cdr != null){
@@ -235,7 +236,10 @@ public class Evaluation {
 					}
 				}
 				ans = eval(token.car);
-				System.out.println("IF " + nowfunc.parameter.get(0).value + " = " + ans);
+				if(!outprint.contains(nowfunc.parameter.get(0).value)){
+					System.out.println("IF " + nowfunc.parameter.get(0).value + " = " + ans);
+					outprint.add(nowfunc.parameter.get(0).value);
+				}
 				return ans;
 			}
 		}
