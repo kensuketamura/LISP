@@ -17,7 +17,7 @@ public class Evaluation {
 		value = start.getValue();
 		if(value.equals("+") || value.equals("-") || value.equals("*") || value.equals("/")){
 			result = calc(start);
-			System.out.println(result);
+			//System.out.println(result);
 		} else if(value.equals("<") || value.equals(">") || value.equals("<=") || value.equals(">=") || value.equals("=")){
 			comp(start);
 		} else if(value.equals("if")){
@@ -235,7 +235,7 @@ public class Evaluation {
 					}
 				}
 				ans = eval(token.car);
-				System.out.println("If = " + ans);
+				System.out.println("IF " + nowfunc.parameter.get(0).value + " = " + ans);
 				return ans;
 			}
 		}
