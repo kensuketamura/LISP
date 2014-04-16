@@ -11,14 +11,24 @@ public class Main {
 		System.out.println("00      00   00   00  00");
 		System.out.println("000000 0000    0000   00");
 		System.out.printf("\n    Welcome to LISP!!\n\n");
+
 		InputKey a = new InputKey();
 		Tokenizer b = new Tokenizer();
 		Parser c = new Parser();
 		Evaluator d = new Evaluator();
+		LoadFile e;
+
 		while(!a.input().equals("END")){
-			b.lexana(a.getInput());
+			if(a.getInput().equals("file")){
+				e = new LoadFile(a.input());
+				b.lexana(e.getFileInString());
+			} else {
+				b.lexana(a.getInput());
+			}
 			c.synana(b.getToken());
-			System.out.println(d.eval(c.getStart()));
+			while(!c.startcons.isEmpty()){
+				System.out.println(d.eval(c.getStart()));
+			}
 		}
 		System.out.println("-----END-----");
 	}

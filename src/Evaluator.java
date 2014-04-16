@@ -49,12 +49,12 @@ public class Evaluator {
 			if(start.cdr.cdr != null){
 				skip = true;
 			}
+		} else if(value.equals("(")){
+			result= eval(start.car);
 		} else if(searchVar(value, false) != null){
 			result = searchVar(value, false).value;
 		} else if(Character.isDigit(value.charAt(0))){
 			result = Integer.parseInt(value);
-		} else if(value.equals("(")){
-			result= eval(start.car);
 		}
 		//System.out.println(result);
 		return result;

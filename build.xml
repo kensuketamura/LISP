@@ -9,7 +9,7 @@
 	<!-- ================================== -->
 	<target name="build">
 		<mkdir dir="${build_dir}" />
-		<javac srcdir="${source_dir}" destdir="${build_dir}" debug="on" target="1.6" source="1.6" includeantruntime="false">
+		<javac encoding="utf-8" srcdir="${source_dir}" destdir="${build_dir}" debug="on" target="1.8" source="1.8" includeantruntime="false">
 			<include name="**/*.java" />
 			<compilerarg value="-Xlint:deprecation" />
 			<compilerarg value="-Xlint:unchecked" />
@@ -23,7 +23,7 @@
 		<jar jarfile="${jar_file}">
 			<fileset dir="${build_dir}" includes="**/*.class" />
 			<manifest>
-				<attribute name="Main-Class" value="Lisp" />
+				<attribute name="Main-Class" value="Main" />
 			</manifest>
 		</jar>
 	</target>
