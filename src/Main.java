@@ -12,13 +12,13 @@ public class Main {
 		System.out.println("000000 0000    0000   00");
 		System.out.printf("\n    Welcome to LISP!!\n\n");
 		InputKey a = new InputKey();
-		LexicalAnalysis b = new LexicalAnalysis();
-		SyntacticAnalysis c = new SyntacticAnalysis();
-		Evaluation d = new Evaluation();
+		Tokenizer b = new Tokenizer();
+		Parser c = new Parser();
+		Evaluator d = new Evaluator();
 		while(!a.input().equals("END")){
 			b.lexana(a.getInput());
 			c.synana(b.getToken());
-			d.eval(c.getStart());
+			System.out.println(d.eval(c.getStart()));
 		}
 		System.out.println("-----END-----");
 	}

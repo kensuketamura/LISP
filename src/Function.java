@@ -12,10 +12,11 @@ public class Function implements Cloneable {
 	}
 	public Object clone(){
 		int i;
-		Variable dammy = new Variable("dammy", 0);
+		Variable dammy;
 			Function copy = new Function(this.name, this.start);
 			copy.parameter = new ArrayList<Variable>();
 			for(i = 0; i < this.parameter.size(); i++){
+				dammy = new Variable("dammy", 0);
 				copy.parameter.add(dammy);
 				copy.parameter.get(i).value = this.parameter.get(i).value;
 				copy.parameter.get(i).name = new String(this.parameter.get(i).name);

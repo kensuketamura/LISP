@@ -1,7 +1,7 @@
 import java.util.ArrayList;
 
 
-public class LexicalAnalysis {
+public class Tokenizer {
 	private ArrayList<String> token = new ArrayList<String>();
 	public ArrayList<String> getToken(){
 		return this.token;

@@ -2,13 +2,12 @@ import java.util.ArrayList;
 import java.util.Stack;
 
 //評価クラス
-public class Evaluation {
+public class Evaluator {
 	public ArrayList<Variable> varlist = new ArrayList<Variable>();
 	public ArrayList<Function> funclist = new ArrayList<Function>();
 	private Function prefunc, nowfunc;
 	private Stack<Function> currentFunc = new Stack<Function>();
 	private boolean skip = false;
-	private ArrayList<Integer> outprint = new ArrayList<Integer>();
 
 	//実行分岐(評価)メソッド
 	public int eval(Cons start){
@@ -54,6 +53,8 @@ public class Evaluation {
 			result = searchVar(value, false).value;
 		} else if(Character.isDigit(value.charAt(0))){
 			result = Integer.parseInt(value);
+		} else if(value.equals("(")){
+			result= eval(start.car);
 		}
 		//System.out.println(result);
 		return result;
@@ -236,10 +237,10 @@ public class Evaluation {
 					}
 				}
 				ans = eval(token.car);
-				if(!outprint.contains(nowfunc.parameter.get(0).value)){
-					System.out.println("IF " + nowfunc.parameter.get(0).value + " = " + ans);
-					outprint.add(nowfunc.parameter.get(0).value);
-				}
+				//if(!outprint.contains(nowfunc.parameter.get(0).value)){
+					//System.out.println("IF " + nowfunc.parameter.get(0).value + " = " + ans);
+					//outprint.add(nowfunc.parameter.get(0).value);
+				//}
 				return ans;
 			}
 		}
@@ -262,9 +263,11 @@ public class Evaluation {
 	public int funcDefun(Cons token){
 		if(!token.cdr.getValue().equals("(") || !token.cdr.getValue().equals(")")){
 			Function a=  new Function(token.cdr.getValue(), token.cdr);
+			Variable para;
 			token = token.cdr.cdr.car;
 			while(token != null){
-				a.parameter.add(new Variable(token.getValue(), 0));
+				para = new Variable(new String(token.getValue()), 0);
+				a.parameter.add(para);
 				token = token.cdr;
 			}
 			funclist.add(a);
