@@ -9,7 +9,7 @@ public class Evaluator {
 	private Stack<Function> currentFunc = new Stack<Function>();
 	private boolean skip = false;
 
-	// 実行分岐(評価)メソッド
+	/* 実行分岐(評価)メソッド */
 	public int eval(Cons start) {
 		Cons temp;
 		String value;
