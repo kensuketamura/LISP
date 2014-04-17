@@ -19,10 +19,12 @@ public class Main {
 		LoadFile e;
 
 		while(!a.input().equals("END")){
-			if(a.getInput().equals("file")){
-				e = new LoadFile(a.input());
-				b.lexana(e.getFileInString());
-			} else {
+			try{
+				if(args != null){
+					e = new LoadFile(args[0]);
+					b.lexana(e.getFileInString());
+				}
+			} catch (ArrayIndexOutOfBoundsException ex){
 				b.lexana(a.getInput());
 			}
 			c.synana(b.getToken());
