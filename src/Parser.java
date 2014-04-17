@@ -7,7 +7,7 @@ import java.util.Stack;
 public class Parser {
 	private Cons a, b, start;
 	public Queue<Cons> startcons = new LinkedList<Cons>();
-	public Cons synana(ArrayList<String> token){
+	public Cons parse(ArrayList<String> token){
 		Stack<Cons> node = new Stack<Cons>();
 		int i;
 		Stack<Boolean> change = new Stack<Boolean>();

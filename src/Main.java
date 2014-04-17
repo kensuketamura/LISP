@@ -18,18 +18,20 @@ public class Main {
 		Evaluator d = new Evaluator();
 		LoadFile e;
 
-		while(!a.input().equals("END")){
-			try{
-				if(args != null){
-					e = new LoadFile(args[0]);
-					b.lexana(e.getFileInString());
-				}
-			} catch (ArrayIndexOutOfBoundsException ex){
-				b.lexana(a.getInput());
-			}
-			c.synana(b.getToken());
-			while(!c.startcons.isEmpty()){
+		if (args.length != 0) {
+			e = new LoadFile(args[0]);
+			b.tokenize(e.getFileInString());
+			c.parse(b.getToken());
+			while (!c.startcons.isEmpty()) {
 				System.out.println(d.eval(c.getStart()));
+			}
+		} else {
+			while (!a.input().equals("END")) {
+				b.tokenize(a.getInput());
+				c.parse(b.getToken());
+				while (!c.startcons.isEmpty()) {
+					System.out.println(d.eval(c.getStart()));
+				}
 			}
 		}
 		System.out.println("-----END-----");
