@@ -5,20 +5,20 @@ import java.util.Stack;
 public class Evaluator {
 	public ArrayList<Variable> varlist = new ArrayList<Variable>();
 	public ArrayList<Function> funclist = new ArrayList<Function>();
-	private Function prefunc, nowfunc;
 	private Stack<Function> currentFunc = new Stack<Function>();
+	private Stack<ArrayList<Variable>> localvar = new Stack<ArrayList<Variable>>();
 	private boolean skip = false;
 
 	/* 実行分岐(評価)メソッド */
 	public int eval(Cons start) {
-		Cons temp;
 		String value;
 		int i, result = 0;
 		value = start.getValue();
-		if (value.equals("+") || value.equals("-") || value.equals("*")
+		if (value.equals("(")) {
+			result = eval(start.car);
+		} else if (value.equals("+") || value.equals("-") || value.equals("*")
 				|| value.equals("/")) {
 			result = calc(start);
-			// System.out.println(result);
 		} else if (value.equals("<") || value.equals(">") || value.equals("<=")
 				|| value.equals(">=") || value.equals("=")) {
 			comp(start);
@@ -31,33 +31,28 @@ public class Evaluator {
 		} else if (value.equals("defun")) {
 			result = funcDefun(start);
 		} else if (searchFunc(value, false) != null) {
-			if (nowfunc == null) {
-				nowfunc = (Function) searchFunc(value, false).clone();
+			currentFunc.push((Function) searchFunc(value, false));
+			ArrayList<Variable> local = new ArrayList<Variable>();
+			for (i = 0; i < currentFunc.peek().parameter.size(); i++) {
+				start = start.cdr;
+				local.add(new Variable(
+						currentFunc.peek().parameter.get(i).name, eval(start)));
 			}
-			prefunc = (Function) searchFunc(value, false).clone();
-			temp = start.cdr.car;
-			for (i = 0; i < prefunc.parameter.size(); i++) {
-				prefunc.parameter.get(i).value = eval(temp);
-				temp = temp.cdr;
-			}
-			nowfunc = prefunc;
-			currentFunc.push(nowfunc);
-			result = eval(nowfunc.start.cdr.cdr.car);
+			localvar.push(local);
+			result = eval(currentFunc.peek().start.cdr.cdr.car);
 			if (!currentFunc.isEmpty()) {
 				currentFunc.pop();
-				if (!currentFunc.isEmpty()) {
-					nowfunc = currentFunc.peek();
-				}
 			}
-			if (start.cdr.cdr != null) {
+			if (!localvar.isEmpty()) {
+				localvar.pop();
+			}
+			if (start.cdr != null) {
 				skip = true;
 			}
-		} else if (value.equals("(")) {
-			result = eval(start.car);
-		} else if (searchVar(value, false) != null) {
-			result = searchVar(value, false).value;
 		} else if (Character.isDigit(value.charAt(0))) {
 			result = Integer.parseInt(value);
+		} else if (searchVar(value, false) != null) {
+			result = searchVar(value, false).value;
 		}
 		// System.out.println(result);
 		return result;
@@ -287,10 +282,11 @@ public class Evaluator {
 	// 変数検索メソッド
 	public Variable searchVar(String name, boolean errorprint) {
 		int i = 0;
-		if (nowfunc != null) {
-			for (i = 0; i < this.nowfunc.parameter.size(); i++) {
-				if (name.equals(this.nowfunc.parameter.get(i).name)) {
-					return this.nowfunc.parameter.get(i);
+		if (!currentFunc.isEmpty()) {
+			Variable var = this.localvar.peek().get(i);
+			for (i = 0; i < this.currentFunc.peek().parameter.size(); i++) {
+				if (name.equals(var.name)) {
+					return var;
 				}
 			}
 		}
@@ -308,9 +304,10 @@ public class Evaluator {
 	// 関数検索メソッド
 	public Function searchFunc(String name, boolean errorprint) {
 		int i = 0;
+		Function func = this.funclist.get(i);
 		for (i = 0; i < this.funclist.size(); i++) {
-			if (name.equals(this.funclist.get(i).name)) {
-				return this.funclist.get(i);
+			if (name.equals(func.name)) {
+				return func;
 			}
 		}
 		if (errorprint) {
